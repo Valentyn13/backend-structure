@@ -3,16 +3,12 @@ const express = require("express");
 const db = require('./src/data/connection')
 const initApi = require('./src/api/api')
 const statEmitter = require('./src/socket/connection')
+const stats = require('./src/common/constants/constants')
 
 const app = express();
 
 const port = 4000;
 
-const stats = {
-  totalUsers: 3,
-  totalBets: 1,
-  totalEvents: 1,
-};
 app.use(express.json());
 
 app.use((_uselessRequest, _uselessResponse, neededNext) => {

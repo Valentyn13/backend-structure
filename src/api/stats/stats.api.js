@@ -1,9 +1,5 @@
 const jwt = require("jsonwebtoken");
-const stats = {
-    totalUsers: 4,
-    totalBets: 1,
-    totalEvents: 1,
-  };
+const stats = require('../../common/constants/constants')
 
 const initStats = (Router) => {
     const router = new Router()
