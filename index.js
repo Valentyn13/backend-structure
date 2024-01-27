@@ -5,6 +5,7 @@ var joi = require('joi');
 var ee = require('events');
 
 var dbConfig = require("./knexfile");
+const apiPath = require('./src/common/enums/api-path.enum')
 var app = express();
 
 var port = 4000;
@@ -27,11 +28,11 @@ app.use((uselessRequest, uselessResponse, neededNext) => {
   });
 });
 
-app.get("/health", (req, res) => {
+app.get(apiPath.HEALTH, (req, res) => {
   res.send("Hello World!");
 });
 
-app.get("/users/:id", (req, res) => {
+app.get(apiPath.USERS_ID, (req, res) => {
   try {
     var schema = joi.object({
       id: joi.string().uuid(),
@@ -57,7 +58,7 @@ app.get("/users/:id", (req, res) => {
   }
 });
 
-app.post("/users", (req, res) => {
+app.post(apiPath.USERS, (req, res) => {
   var schema = joi.object({
     id: joi.string().uuid(),
     type: joi.string().required(),
@@ -94,7 +95,7 @@ app.post("/users", (req, res) => {
   });
 });
 
-app.put("/users/:id", (req, res) => {
+app.put(apiPath.USERS_ID, (req, res) => {
   let token = req.headers[`authorization`];
   let tokenPayload;
   if(!token) {
@@ -138,7 +139,7 @@ app.put("/users/:id", (req, res) => {
   });
 });
 
-app.post("/transactions", (req, res) => {
+app.post(apiPath.TRANSACTIONS, (req, res) => {
   var schema = joi.object({
     id: joi.string().uuid(),
     userId: joi.string().uuid().required(),
@@ -198,7 +199,7 @@ app.post("/transactions", (req, res) => {
   });
 });
 
-app.post("/events", (req, res) => {
+app.post(apiPath.EVENTS, (req, res) => {
   var schema = joi.object({
     id: joi.string().uuid(),
     type: joi.string().required(),
@@ -282,7 +283,7 @@ app.post("/events", (req, res) => {
   }
 });
 
-app.post("/bets", (req, res) => {
+app.post(apiPath.BETS, (req, res) => {
   var schema = joi.object({
     id: joi.string().uuid(),
     eventId: joi.string().uuid().required(),
@@ -381,7 +382,7 @@ app.post("/bets", (req, res) => {
   }
 });
 
-app.put("/events/:id", (req, res) => {
+app.put(apiPath.EVENTS_ID, (req, res) => {
   var schema = joi.object({
     score: joi.string().required(),
   }).required();
@@ -459,7 +460,7 @@ app.put("/events/:id", (req, res) => {
   }
 });
 
-app.get("/stats", (req, res) => {
+app.get(apiPath.STATS, (req, res) => {
   try {
     var ak = 'authorization';
     let token = req.headers[ak];
