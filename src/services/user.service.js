@@ -29,6 +29,9 @@ class User {
         return result
     }
 
+    async updateUserBalance(id, balance) {
+        return await this._userRepository.updateUserBalance(id, balance)
+    }
 }
 
 
