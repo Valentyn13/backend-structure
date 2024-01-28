@@ -2,6 +2,7 @@ const express = require("express");
 
 const db = require('./src/data/connection')
 const initApi = require('./src/api/api')
+const errorHandler = require('./src/middlewares/error/error.middleware')
 const statEmitter = require('./src/socket/connection')
 const stats = require('./src/common/constants/constants')
 
@@ -20,6 +21,7 @@ app.use((_uselessRequest, _uselessResponse, neededNext) => {
 });
 
 app.use(initApi(express.Router))
+app.use(errorHandler)
 
 const server = app.listen(port, () => {
   statEmitter.on('newUser', () => {

@@ -2,19 +2,17 @@ const joi = require('joi');
 const db = require('../../data/connection')
 const jwt = require("jsonwebtoken");
 const statEmitter = require('../../socket/connection')
+
+const getUserByIdValidator = require('../../middlewares/validation/get-user-by-id.middleware')
+const createUserValidator = require('../../middlewares/validation/create-user.middleware')
+const authorizationMiddleware = require('../../middlewares/authorization/authorization.middleware')
+const updateUserValidator = require('../../middlewares/validation/update-user.middleware')
+
 const initUsers = (Router) => {
     const router = new Router()
 
-    router.get('/:id',(req, res) => {
+    router.get('/:id', getUserByIdValidator,(req, res) => {
         try {
-          var schema = joi.object({
-            id: joi.string().uuid(),
-          }).required();
-          var isValidResult = schema.validate(req.params);
-          if(isValidResult.error) {
-            res.status(400).send({ error: isValidResult.error.details[0].message });
-            return;
-          };
           db("user").where('id', req.params.id).returning("*").then(([result]) => {
             if(!result) {
               res.status(404).send({ error: 'User not found'});
@@ -33,20 +31,8 @@ const initUsers = (Router) => {
 
 
 
-      router.post('/',(req, res) => {
-        var schema = joi.object({
-          id: joi.string().uuid(),
-          type: joi.string().required(),
-          email: joi.string().email().required(),
-          phone: joi.string().pattern(/^\+?3?8?(0\d{9})$/).required(),
-          name: joi.string().required(),
-          city: joi.string(),
-        }).required();
-        var isValidResult = schema.validate(req.body);
-        if(isValidResult.error) {
-          res.status(400).send({ error: isValidResult.error.details[0].message });
-          return;
-        };
+      router.post('/',createUserValidator,(req, res) => {
+
         req.body.balance = 0;
         db("user").insert(req.body).returning("*").then(([result]) => {
             
@@ -73,32 +59,8 @@ const initUsers = (Router) => {
         });
       })
 
-      router.put('/:id',(req, res) => {
-        let token = req.headers[`authorization`];
-        let tokenPayload;
-        if(!token) {
-          return res.status(401).send({ error: 'Not Authorized' });
-        }
-        token = token.replace('Bearer ', '');
-        try {
-          tokenPayload = jwt.verify(token, process.env.JWT_SECRET);
-        } catch (err) {
-          return res.status(401).send({ error: 'Not Authorized' });
-        }
-        var schema = joi.object({
-          email: joi.string().email(),
-          phone: joi.string().pattern(/^\+?3?8?(0\d{9})$/),
-          name: joi.string(),
-          city: joi.string(),
-        }).required();
-        var isValidResult = schema.validate(req.body);
-        if(isValidResult.error) {
-          res.status(400).send({ error: isValidResult.error.details[0].message });
-          return;
-        };
-        if(req.params.id !== tokenPayload.id) {
-          return res.status(401).send({ error: 'UserId mismatch' });
-        }
+      router.put('/:id',authorizationMiddleware, updateUserValidator,(req, res) => {
+
         db("user").where('id', req.params.id).update(req.body).returning("*").then(([result]) => {
           return res.send({ 
             ...result,
