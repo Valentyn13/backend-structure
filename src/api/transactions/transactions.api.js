@@ -1,36 +1,15 @@
-const joi = require('joi');
+
 const db = require('../../data/connection')
 const jwt = require("jsonwebtoken");
+
+
+const createTransactionValidator = require('../../middlewares/validation/create-transaction.middleware')
+const adminAuthorizationMiddleware = require('../../middlewares/authorization/admin-authorization.middleware')
 
 const initTransactions = (Router) => {
     const router  = Router()
 
-    router.post('/',(req, res) => {
-        var schema = joi.object({
-          id: joi.string().uuid(),
-          userId: joi.string().uuid().required(),
-          cardNumber: joi.string().required(),
-          amount: joi.number().min(0).required(),
-        }).required();
-        var isValidResult = schema.validate(req.body);
-        if(isValidResult.error) {
-          res.status(400).send({ error: isValidResult.error.details[0].message });
-          return;
-        };
-      
-        let token = req.headers["authorization"];
-        if(!token) {
-          return res.status(401).send({ error: 'Not Authorized' });
-        }
-        token = token.replace('Bearer ', '');
-        try {
-          var tokenPayload = jwt.verify(token, process.env.JWT_SECRET);
-          if (tokenPayload.type != 'admin') {
-            throw new Error();
-          }
-        } catch (err) {
-          return res.status(401).send({ error: 'Not Authorized' });
-        }
+    router.post('/',createTransactionValidator, adminAuthorizationMiddleware,(req, res) => {
       
         db("user").where('id', req.body.userId).then(([user]) => {
           if(!user) {
