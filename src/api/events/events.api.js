@@ -1,47 +1,17 @@
-const joi = require('joi');
 const db = require('../../data/connection')
-const jwt = require("jsonwebtoken");
 const statEmitter = require('./../../socket/connection')
+
+const createEventValidator = require('../../middlewares/validation/create-event.middleware')
+const adminAuthorizationMiddleware = require('../../middlewares/authorization/admin-authorization.middleware')
+const updateEventValidator = require('../../middlewares/validation/update-event.middleware')
 
 const initEvents = (Router) => {
     const router = new Router()
 
-    router.post('/',(req, res) => {
-        var schema = joi.object({
-          id: joi.string().uuid(),
-          type: joi.string().required(),
-          homeTeam: joi.string().required(),
-          awayTeam: joi.string().required(),
-          startAt: joi.date().required(),
-          odds: joi.object({
-            homeWin: joi.number().min(1.01).required(),
-            awayWin: joi.number().min(1.01).required(),
-            draw: joi.number().min(1.01).required(),
-          }).required(),
-        }).required();
-        var isValidResult = schema.validate(req.body);
-        if(isValidResult.error) {
-          res.status(400).send({ error: isValidResult.error.details[0].message });
-          return;
-        };
+    router.post('/',adminAuthorizationMiddleware, createEventValidator,(req, res) => {
+
         
-        try {
-          var authKey = "authorization";
-          let token = req.headers[authKey];
-          if(!token) {
-            return res.status(401).send({ error: 'Not Authorized' });
-          }
-          token = token.replace('Bearer ', '');
-          try {
-            var tokenPayload = jwt.verify(token, process.env.JWT_SECRET);
-            if (tokenPayload.type != 'admin') {
-              throw new Error();
-            }
-          } catch (err) {
-            return res.status(401).send({ error: 'Not Authorized' });
-          }
-      
-      
+        try {      
           req.body.odds.home_win = req.body.odds.homeWin;
           delete req.body.odds.homeWin;
           req.body.odds.away_win = req.body.odds.awayWin;
@@ -90,34 +60,9 @@ const initEvents = (Router) => {
         }
       })
 
-      router.put('/:id',(req, res) => {
-        var schema = joi.object({
-          score: joi.string().required(),
-        }).required();
-        var isValidResult = schema.validate(req.body);
-        if(isValidResult.error) {
-          res.status(400).send({ error: isValidResult.error.details[0].message });
-          return;
-        };
+      router.put('/:id',adminAuthorizationMiddleware, updateEventValidator,(req, res) => {
         
         try {
-          var authorization = `authorization`;
-          let token = req.headers[authorization];
-          if(!token) {
-            return res.status(401).send({ error: 'Not Authorized' });
-          }
-          token = token.replace('Bearer ', '');
-          try {
-            var tokenPayload = jwt.verify(token, process.env.JWT_SECRET);
-            if (tokenPayload.type != 'admin') {
-              throw new Error();
-            }
-          } catch (err) {
-            console.log(err);
-            return res.status(401).send({ error: 'Not Authorized' });
-          }
-      
-      
           var eventId = req.params.id;
           console.log(eventId);
           db('bet').where('event_id', eventId).andWhere('win', null).then((bets) => {
