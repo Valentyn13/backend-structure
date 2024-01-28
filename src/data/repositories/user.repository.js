@@ -13,6 +13,10 @@ class User {
     async update (id,data) {
         return await db("user").where('id', id).update(data).returning("*")
     }
+
+    async updateUserBalance(id, balance) {
+        return await db("user").where('id', id).update('balance', balance)
+    }
 }
 
 
