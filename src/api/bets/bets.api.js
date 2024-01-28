@@ -1,23 +1,13 @@
-const joi = require('joi');
+
 const db = require('../../data/connection')
 const jwt = require("jsonwebtoken");
 const statEmitter = require('../../socket/connection')
-
+const createBetValidator = require('../../middlewares/validation/create-bet.middleware')
 const initBets = (Router) => {
     const router = Router()
 
-    router.post('/',(req, res) => {
-        var schema = joi.object({
-          id: joi.string().uuid(),
-          eventId: joi.string().uuid().required(),
-          betAmount: joi.number().min(1).required(),
-          prediction: joi.string().valid('w1', 'w2', 'x').required(),
-        }).required();
-        var isValidResult = schema.validate(req.body);
-        if(isValidResult.error) {
-          res.status(400).send({ error: isValidResult.error.details[0].message });
-          return;
-        };
+    router.post('/',createBetValidator, (req, res) => {
+
         
         let userId;
         try {

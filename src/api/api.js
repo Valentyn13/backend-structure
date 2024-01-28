@@ -15,9 +15,7 @@ const initApi = Router => {
     apiRouter.use(apiPath.EVENTS,initEvents(Router))
     apiRouter.use(apiPath.BETS, initBets(Router))
     apiRouter.use(apiPath.STATS,initStats(Router))
-
-
-
+    
     return apiRouter
 }
 
