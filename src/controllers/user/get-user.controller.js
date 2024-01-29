@@ -10,8 +10,8 @@ const getUserController = async (req, res) => {
     return res.send({
       ...user,
     });
-  } catch (err) {
-    console.log(err);
+  } catch (error) {
+    console.log(error);
     res.status(500).send("Internal Server Error");
     return;
   }

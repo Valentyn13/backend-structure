@@ -8,7 +8,7 @@ const putEventController = async (req, res) => {
 
     const bets = await betService.createBet(eventId);
 
-    var [w1, w2] = req.body.score.split(":");
+    const [w1, w2] = req.body.score.split(":");
     let result;
     if (+w1 > +w2) {
       result = "w1";

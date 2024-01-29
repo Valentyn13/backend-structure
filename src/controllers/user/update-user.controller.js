@@ -10,13 +10,11 @@ const updateUserController = (req, res) => {
     })
     .catch((err) => {
       if (err.code == "23505") {
-        console.log(err);
         res.status(400).send({
           error: err.detail,
         });
         return;
       }
-      console.log(err);
       res.status(500).send("Internal Server Error");
       return;
     });

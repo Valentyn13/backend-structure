@@ -1,6 +1,7 @@
 const userService = require("../../services/user.service");
 const transactionService = require("../../services/transaction.service");
 const transformProps = require("../../helpers/transform-props");
+const toSnakeCase = require('../../helpers/to-snake-case')
 
 const createTransactionController = async (req, res) => {
   const user = await userService.getUserById(req.body.userId);
@@ -8,15 +9,11 @@ const createTransactionController = async (req, res) => {
     res.status(400).send({ error: "User does not exist" });
     return;
   }
-  req.body.card_number = req.body.cardNumber;
-  delete req.body.cardNumber;
-  req.body.user_id = req.body.userId;
-  delete req.body.userId;
+  toSnakeCase(req.body)
 
   transactionService
     .createTransaction(req.body)
     .then(([result]) => {
-      console.log(result);
       const currentBalance = req.body.amount + user.balance;
       userService
         .updateUserBalance(req.body.user_id, currentBalance)
@@ -32,8 +29,7 @@ const createTransactionController = async (req, res) => {
           });
         });
     })
-    .catch((err) => {
-      console.log(err);
+    .catch(() => {
       res.status(500).send("Internal Server Error");
       return;
     });

@@ -4,14 +4,13 @@ const betService = require("../../services/bet.service");
 const statEmitter = require("../../socket/connection");
 const transformProps = require("../../helpers/transform-props");
 const getIdFromToken = require("../../helpers/get-token");
+const toSnakeCase = require('../../helpers/to-snake-case')
 
 const createBetController = async (req, res) => {
   let userId = getIdFromToken(req.headers["authorization"]);
   try {
-    req.body.event_id = req.body.eventId;
-    req.body.bet_amount = req.body.betAmount;
-    delete req.body.eventId;
-    delete req.body.betAmount;
+    toSnakeCase(req.body)
+
     req.body.user_id = userId;
 
     const user = await userService.getUserById(userId);
@@ -49,7 +48,7 @@ const createBetController = async (req, res) => {
       multiplier,
       event_id: event.id,
     });
-    var currentBalance = user.balance - req.body.bet_amount;
+    const currentBalance = user.balance - req.body.bet_amount;
     userService.updateUserBalance(userId, currentBalance).then(() => {
       statEmitter.emit("newBet");
     });
