@@ -5,6 +5,9 @@ const createEventValidator = require('../../middlewares/validation/create-event.
 const adminAuthorizationMiddleware = require('../../middlewares/authorization/admin-authorization.middleware')
 const updateEventValidator = require('../../middlewares/validation/update-event.middleware')
 
+const transformProps = require('../../helpers/transform-props')
+
+
 const initEvents = (Router) => {
     const router = new Router()
 
@@ -29,24 +32,13 @@ const initEvents = (Router) => {
               odds_id: odds.id
             }).returning("*").then(([event]) => {
               statEmitter.emit('newEvent');
-              ['bet_amount', 'event_id', 'away_team', 'home_team', 'odds_id', 'start_at', 'updated_at', 'created_at'].forEach(whatakey => {
-                var index = whatakey.indexOf('_');
-                var newKey = whatakey.replace('_', '');
-                newKey = newKey.split('')
-                newKey[index] = newKey[index].toUpperCase();
-                newKey = newKey.join('');
-                event[newKey] = event[whatakey];
-                delete event[whatakey];
-              });
-              ['home_win', 'away_win', 'created_at', 'updated_at'].forEach(whatakey => {
-                var index = whatakey.indexOf('_');
-                var newKey = whatakey.replace('_', '');
-                newKey = newKey.split('')
-                newKey[index] = newKey[index].toUpperCase();
-                newKey = newKey.join('');
-                odds[newKey] = odds[whatakey];
-                delete odds[whatakey];
-              })
+
+              transformProps(['bet_amount', 'event_id', 'away_team', 'home_team', 'odds_id', 'start_at', 'updated_at', 'created_at'],event)
+
+
+              transformProps(['home_win', 'away_win', 'created_at', 'updated_at'],odds)
+
+
               return res.send({ 
                 ...event,
                 odds,
@@ -93,15 +85,8 @@ const initEvents = (Router) => {
                 }
               }));
               setTimeout(() => {
-                ['bet_amount', 'event_id', 'away_team', 'home_team', 'odds_id', 'start_at', 'updated_at', 'created_at'].forEach(whatakey => {
-                  var index = whatakey.indexOf('_');
-                  var newKey = whatakey.replace('_', '');
-                  newKey = newKey.split('')
-                  newKey[index] = newKey[index].toUpperCase();
-                  newKey = newKey.join('');
-                  event[newKey] = event[whatakey];
-                  delete event[whatakey];
-                });
+                transformProps(['bet_amount', 'event_id', 'away_team', 'home_team', 'odds_id', 'start_at', 'updated_at', 'created_at'],event)
+
                 res.send(event);
               }, 1000)
             });

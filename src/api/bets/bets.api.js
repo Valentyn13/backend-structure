@@ -3,6 +3,7 @@ const db = require('../../data/connection')
 const jwt = require("jsonwebtoken");
 const statEmitter = require('../../socket/connection')
 const createBetValidator = require('../../middlewares/validation/create-bet.middleware')
+const transformProps = require('../../helpers/transform-props')
 const initBets = (Router) => {
     const router = Router()
 
@@ -70,15 +71,9 @@ const initBets = (Router) => {
                     balance: currentBalance,
                   }).then(() => {
                     statEmitter.emit('newBet');
-                    ['bet_amount', 'event_id', 'away_team', 'home_team', 'odds_id', 'start_at', 'updated_at', 'created_at', 'user_id'].forEach(whatakey => {
-                      var index = whatakey.indexOf('_');
-                      var newKey = whatakey.replace('_', '');
-                      newKey = newKey.split('')
-                      newKey[index] = newKey[index].toUpperCase();
-                      newKey = newKey.join('');
-                      bet[newKey] = bet[whatakey];
-                      delete bet[whatakey];
-                    });
+
+                    transformProps(['bet_amount', 'event_id', 'away_team', 'home_team', 'odds_id', 'start_at', 'updated_at', 'created_at', 'user_id'],bet)
+
                     return res.send({ 
                       ...bet,
                       currentBalance: currentBalance,

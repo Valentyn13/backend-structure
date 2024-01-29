@@ -1,6 +1,6 @@
 const userService = require('../../services/user.service')
 const transactionService = require('../../services/transaction.service')
-
+const transformProps = require('../../helpers/transform-props')
 const createTransactionController = async (req, res) =>{
     const user = await userService.getUserById(req.body.userId)
     if(!user) {
@@ -13,17 +13,11 @@ const createTransactionController = async (req, res) =>{
     delete req.body.userId;
 
     transactionService.createTransaction(req.body).then(([result]) =>{
+      console.log(result)
         const currentBalance = req.body.amount + user.balance;
         userService.updateUserBalance(req.body.user_id, currentBalance).then(() => {
-            ['user_id', 'card_number', 'created_at', 'updated_at'].forEach(whatakey => {
-              var index = whatakey.indexOf('_');
-              var newKey = whatakey.replace('_', '');
-              newKey = newKey.split('')
-              newKey[index] = newKey[index].toUpperCase();
-              newKey = newKey.join('');
-              result[newKey] = result[whatakey];
-              delete result[whatakey];
-            })
+          transformProps(['user_id', 'card_number', 'created_at', 'updated_at'],result)
+
             return res.send({ 
               ...result,
               currentBalance,
