@@ -8,6 +8,10 @@ class Event {
   async addEvent(data) {
     return await db("event").insert(data).returning("*");
   }
+
+  async updateEvent(id,data) {
+    return await db("event").where("id", id).update(data).returning("*")
+  }
 }
 
 const eventRepository = new Event();

@@ -14,6 +14,11 @@ class Events {
         const result = await this._eventRepository.addEvent(data)
         return result[0]
     }
+
+    async updateEvent(id,data) {
+        const result = await this._eventRepository.updateEvent(id,data)
+        return result[0]
+    }
 }
 
 const eventService = new Events(eventRepository)
