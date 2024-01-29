@@ -21,6 +21,11 @@ class Bet {
         return await this._betRepository.updateUserAfterBet(betUserId, data)
     }
 
+    async insertBet(data){
+        const result = await this._betRepository.insertBet(data)
+        return result[0]
+    }
+
 }
 
 const betService = new Bet(betRepository)

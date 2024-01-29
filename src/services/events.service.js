@@ -10,6 +10,16 @@ class Events {
         return result[0]
     }
 
+    async findEvent(id){
+        const result = await this._eventRepository.findEvent(id)
+        return result[0]
+    }
+
+    async findOdd(id){
+        const result = await this._eventRepository.findOdd(id)
+        return result[0]
+    }
+
     async addEvent(data){
         const result = await this._eventRepository.addEvent(data)
         return result[0]

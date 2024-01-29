@@ -17,6 +17,10 @@ class Bet {
     async updateUserAfterBet(betUserId, data){
        return await db("user").where("id", betUserId).update(data);
     }
+
+    async insertBet(data) {
+        return await db("bet").insert(data).returning("*")
+    }
 }
 
 

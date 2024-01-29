@@ -5,6 +5,14 @@ class Event {
     return await db("odds").insert(data).returning("*");
   }
 
+  async findEvent(id){
+    return await db("event").where("id",id)
+  }
+
+  async findOdd (id){
+    return await db("odds").where("id",id)
+  }
+
   async addEvent(data) {
     return await db("event").insert(data).returning("*");
   }
