@@ -1,10 +1,12 @@
 const db = require("../../data/connection");
 
-const statEmitter = require("./../../socket/connection");
+//const statEmitter = require("./../../socket/connection");
 const createEventValidator = require("../../middlewares/validation/create-event.middleware");
 const updateEventValidator = require("../../middlewares/validation/update-event.middleware");
 const adminAuthorizationMiddleware = require("../../middlewares/authorization/admin-authorization.middleware");
 const transformProps = require("../../helpers/transform-props");
+
+const createEventsController = require('../../controllers/events/create-events.controller')
 
 const initEvents = (Router) => {
   const router = new Router();
@@ -13,63 +15,7 @@ const initEvents = (Router) => {
     "/",
     adminAuthorizationMiddleware,
     createEventValidator,
-    (req, res) => {
-      try {
-        req.body.odds.home_win = req.body.odds.homeWin;
-        delete req.body.odds.homeWin;
-        req.body.odds.away_win = req.body.odds.awayWin;
-        delete req.body.odds.awayWin;
-        db("odds")
-          .insert(req.body.odds)
-          .returning("*")
-          .then(([odds]) => {
-            delete req.body.odds;
-            req.body.away_team = req.body.awayTeam;
-            req.body.home_team = req.body.homeTeam;
-            req.body.start_at = req.body.startAt;
-            delete req.body.awayTeam;
-            delete req.body.homeTeam;
-            delete req.body.startAt;
-            db("event")
-              .insert({
-                ...req.body,
-                odds_id: odds.id,
-              })
-              .returning("*")
-              .then(([event]) => {
-                statEmitter.emit("newEvent");
-
-                transformProps(
-                  [
-                    "bet_amount",
-                    "event_id",
-                    "away_team",
-                    "home_team",
-                    "odds_id",
-                    "start_at",
-                    "updated_at",
-                    "created_at",
-                  ],
-                  event
-                );
-
-                transformProps(
-                  ["home_win", "away_win", "created_at", "updated_at"],
-                  odds
-                );
-
-                return res.send({
-                  ...event,
-                  odds,
-                });
-              });
-          });
-      } catch (err) {
-        console.log(err);
-        res.status(500).send("Internal Server Error");
-        return;
-      }
-    }
+    createEventsController
   );
 
   router.put(
@@ -152,3 +98,65 @@ const initEvents = (Router) => {
 };
 
 module.exports = initEvents;
+
+
+
+
+
+// (req, res) => {
+//   try {
+//     req.body.odds.home_win = req.body.odds.homeWin;
+//     delete req.body.odds.homeWin;
+//     req.body.odds.away_win = req.body.odds.awayWin;
+//     delete req.body.odds.awayWin;
+//     db("odds")
+//       .insert(req.body.odds)
+//       .returning("*")
+//       .then(([odds]) => {
+//         delete req.body.odds;
+//         req.body.away_team = req.body.awayTeam;
+//         req.body.home_team = req.body.homeTeam;
+//         req.body.start_at = req.body.startAt;
+//         delete req.body.awayTeam;
+//         delete req.body.homeTeam;
+//         delete req.body.startAt;
+//         db("event")
+//           .insert({
+//             ...req.body,
+//             odds_id: odds.id,
+//           })
+//           .returning("*")
+//           .then(([event]) => {
+//             statEmitter.emit("newEvent");
+
+//             transformProps(
+//               [
+//                 "bet_amount",
+//                 "event_id",
+//                 "away_team",
+//                 "home_team",
+//                 "odds_id",
+//                 "start_at",
+//                 "updated_at",
+//                 "created_at",
+//               ],
+//               event
+//             );
+
+//             transformProps(
+//               ["home_win", "away_win", "created_at", "updated_at"],
+//               odds
+//             );
+
+//             return res.send({
+//               ...event,
+//               odds,
+//             });
+//           });
+//       });
+//   } catch (err) {
+//     console.log(err);
+//     res.status(500).send("Internal Server Error");
+//     return;
+//   }
+// }
