@@ -7,22 +7,11 @@ const betService = require('../../services/bet.service')
 const statEmitter = require('../../socket/connection')
 const transformProps = require('../../helpers/transform-props')
 
+const getIdFromToken = require('../../helpers/get-token')
+
 const createBetController = async (req,res) =>{
-    let userId;
+    let userId = getIdFromToken(req.headers['authorization']);
     try {
-        var authorizationKey = "authorization";
-        let token = req.headers[authorizationKey];
-        if (!token) {
-          return res.status(401).send({ error: "Not Authorized" });
-        }
-        token = token.replace("Bearer ", "");
-        try {
-          var tokenPayload = jwt.verify(token, process.env.JWT_SECRET);
-          userId = tokenPayload.id;
-        } catch (err) {
-          console.log(err);
-          return res.status(401).send({ error: "Not Authorized" });
-        }
         req.body.event_id = req.body.eventId;
         req.body.bet_amount = req.body.betAmount;
         delete req.body.eventId;
