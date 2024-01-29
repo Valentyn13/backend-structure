@@ -1,6 +1,5 @@
-const ee = require('events');
-
+const ee = require("events");
 
 const statEmitter = new ee();
 
-module.exports =  statEmitter
+module.exports = statEmitter;

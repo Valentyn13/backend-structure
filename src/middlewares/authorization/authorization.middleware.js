@@ -19,7 +19,7 @@ const authorizationMiddleware = (req, res, next) => {
   if (req.params.id !== tokenPayload.id) {
     return res.status(401).send({ error: "UserId mismatch" });
   }
-  next()
+  next();
 };
 
-module.exports = authorizationMiddleware
+module.exports = authorizationMiddleware;

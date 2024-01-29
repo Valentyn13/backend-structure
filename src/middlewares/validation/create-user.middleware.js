@@ -21,7 +21,7 @@ const createUserValidator = (req, res, next) => {
       res.status(400).send({ error: isValidResult.error.details[0].message });
       return;
     }
-    next()
+    next();
   } catch (error) {
     next(error);
   }

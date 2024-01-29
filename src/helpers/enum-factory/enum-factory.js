@@ -12,4 +12,4 @@ function Enum(baseEnum) {
   });
 }
 
-module.exports = Enum
+module.exports = Enum;

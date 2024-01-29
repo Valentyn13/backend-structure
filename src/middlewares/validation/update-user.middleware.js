@@ -1,4 +1,4 @@
-const joi = require('joi');
+const joi = require("joi");
 
 const updateUserValidator = (req, res, next) => {
   try {
@@ -22,4 +22,4 @@ const updateUserValidator = (req, res, next) => {
   }
 };
 
-module.exports = updateUserValidator
+module.exports = updateUserValidator;

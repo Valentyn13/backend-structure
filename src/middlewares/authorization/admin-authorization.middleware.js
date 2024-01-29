@@ -8,11 +8,11 @@ const adminAuthorizationMiddleware = (req, res, next) => {
     if (!token) {
       return res.status(401).send({ error: "Not Authorized" });
     }
-  
+
     token = token.replace("Bearer ", "");
-  
+
     tokenPayload = jwt.verify(token, process.env.JWT_SECRET);
-  
+
     if (tokenPayload.type != "admin") {
       return res.status(401).send({ error: "Not Authorized" });
     }
@@ -22,8 +22,6 @@ const adminAuthorizationMiddleware = (req, res, next) => {
     res.status(500).send("Internal Server Error");
     return;
   }
-
 };
 
-
-module.exports = adminAuthorizationMiddleware
+module.exports = adminAuthorizationMiddleware;

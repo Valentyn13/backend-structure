@@ -1,13 +1,11 @@
-const db = require('../connection')
+const db = require("../connection");
 
 class Transaction {
-
-    async create(data) {
-        return await db("transaction").insert(data).returning("*")
-    }
+  async create(data) {
+    return await db("transaction").insert(data).returning("*");
+  }
 }
 
+const transactionRepository = new Transaction();
 
-const transactionRepository = new Transaction()
-
-module.exports = transactionRepository
+module.exports = transactionRepository;
