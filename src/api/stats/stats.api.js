@@ -1,4 +1,5 @@
 const stats = require("../../common/constants/constants");
+
 const adminAuthorizationMiddleware = require("../../middlewares/authorization/admin-authorization.middleware");
 
 const initStats = (Router) => {
