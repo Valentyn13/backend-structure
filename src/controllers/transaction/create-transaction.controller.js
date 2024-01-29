@@ -1,7 +1,7 @@
 const userService = require("../../services/user.service");
 const transactionService = require("../../services/transaction.service");
 const transformProps = require("../../helpers/transform-props");
-const toSnakeCase = require('../../helpers/to-snake-case')
+const toSnakeCase = require("../../helpers/to-snake-case");
 
 const createTransactionController = async (req, res) => {
   const user = await userService.getUserById(req.body.userId);
@@ -9,7 +9,7 @@ const createTransactionController = async (req, res) => {
     res.status(400).send({ error: "User does not exist" });
     return;
   }
-  toSnakeCase(req.body)
+  toSnakeCase(req.body);
 
   transactionService
     .createTransaction(req.body)

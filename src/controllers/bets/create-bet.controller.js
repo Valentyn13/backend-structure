@@ -4,12 +4,12 @@ const betService = require("../../services/bet.service");
 const statEmitter = require("../../socket/connection");
 const transformProps = require("../../helpers/transform-props");
 const getIdFromToken = require("../../helpers/get-token");
-const toSnakeCase = require('../../helpers/to-snake-case')
+const toSnakeCase = require("../../helpers/to-snake-case");
 
 const createBetController = async (req, res) => {
   let userId = getIdFromToken(req.headers["authorization"]);
   try {
-    toSnakeCase(req.body)
+    toSnakeCase(req.body);
 
     req.body.user_id = userId;
 
